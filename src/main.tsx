@@ -9,7 +9,8 @@ Please see LICENSE in the repository root for full details.
 // function gets set. It needs to be not in the same file as we use
 // createClient, or the typescript transpiler gets confused about
 // dependency references.
-import "matrix-js-sdk/lib/browser-index";
+// Use the package entrypoint so bundlers can resolve it reliably.
+import "matrix-js-sdk";
 
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
