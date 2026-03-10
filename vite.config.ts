@@ -139,6 +139,8 @@ export default ({
         // which Vite for some reason refuses to work with, so we point it to
         // src/index.ts instead
         "matrix-widget-api": "matrix-widget-api/src/index.ts",
+        // Ensure Rollup can resolve the browser entrypoint from matrix-js-sdk
+        "matrix-js-sdk/lib/browser-index": "matrix-js-sdk/lib/browser-index.js",
       },
       dedupe: [
         "react",
