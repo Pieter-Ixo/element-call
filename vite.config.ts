@@ -109,6 +109,8 @@ export default ({
     // If resolution fails, we simply won't register aliases for these
     // entrypoints and let Vite's default resolution take over.
   }
+  console.log("matrix-js-sdk browser-index alias:", matrixBrowserIndexPath);
+  console.log("matrix-js-sdk logger alias:", matrixLoggerPath);
 
   return {
     server: {
