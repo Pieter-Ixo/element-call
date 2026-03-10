@@ -35,9 +35,6 @@
     "links:enable": "mv .links.disabled.yaml .links.yaml & touch .links.yaml",
     "links:disable": "mv .links.yaml .links.disabled.yaml"
   },
-  "engines": {
-    "node": "^22.0.0"
-  },
   "devDependencies": {
     "@babel/core": "^7.16.5",
     "@babel/preset-env": "^7.22.20",
