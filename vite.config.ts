@@ -21,6 +21,7 @@ import { sentryVitePlugin } from "@sentry/vite-plugin";
 import react from "@vitejs/plugin-react";
 import { realpathSync } from "fs";
 import * as fs from "node:fs";
+import { createRequire } from "node:module";
 
 // https://vitejs.dev/config/
 // Modified type helper from defineConfig to allow for packageType (see defineConfig from vite)
@@ -28,6 +29,7 @@ export default ({
   mode,
   packageType,
 }: ConfigEnv & { packageType?: "full" | "embedded" }): UserConfig => {
+  const require = createRequire(import.meta.url);
   const env = loadEnv(mode, process.cwd());
   // Environment variables with the VITE_ prefix are accessible at runtime.
   // So, we set this to allow for build/package specific behavior.
@@ -93,19 +95,19 @@ export default ({
   }
   console.log("Allowed vite paths:", allow);
 
-  // Resolve specific matrix-js-sdk entrypoints to their actual files so that
-  // Rollup can find them even when package exports would normally block
-  // deep imports like "matrix-js-sdk/lib/browser-index".
+  // Resolve specific matrix-js-sdk entrypoints to their actual files in a way
+  // that works both locally and in environments like Vercel (Yarn PnP,
+  // virtualized node_modules, etc.).
   let matrixBrowserIndexPath: string | undefined;
   let matrixLoggerPath: string | undefined;
   try {
-    matrixBrowserIndexPath = realpathSync(
-      "node_modules/matrix-js-sdk/lib/browser-index.js",
+    matrixBrowserIndexPath = require.resolve(
+      "matrix-js-sdk/lib/browser-index.js",
     );
-    matrixLoggerPath = realpathSync("node_modules/matrix-js-sdk/lib/logger.js");
+    matrixLoggerPath = require.resolve("matrix-js-sdk/lib/logger.js");
   } catch {
-    // In dev or in unusual setups these files might not exist yet; aliases
-    // below fall back to the bare specifiers in that case.
+    // If resolution fails, we simply won't register aliases for these
+    // entrypoints and let Vite's default resolution take over.
   }
 
   return {
@@ -155,11 +157,13 @@ export default ({
         // src/index.ts instead
         "matrix-widget-api": "matrix-widget-api/src/index.ts",
         // Ensure Rollup can resolve specific browser entrypoints from matrix-js-sdk
-        "matrix-js-sdk/lib/browser-index":
-          matrixBrowserIndexPath ?? "matrix-js-sdk/lib/browser-index",
-        "matrix-js-sdk/lib/logger":
-          matrixLoggerPath ?? "matrix-js-sdk/lib/logger",
-      },
+        ...(matrixBrowserIndexPath && {
+          "matrix-js-sdk/lib/browser-index": matrixBrowserIndexPath,
+        }),
+        ...(matrixLoggerPath && {
+          "matrix-js-sdk/lib/logger": matrixLoggerPath,
+        }),
+      } as Record<string, string>,
       dedupe: [
         "react",
         "react-dom",
