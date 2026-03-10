@@ -93,6 +93,21 @@ export default ({
   }
   console.log("Allowed vite paths:", allow);
 
+  // Resolve specific matrix-js-sdk entrypoints to their actual files so that
+  // Rollup can find them even when package exports would normally block
+  // deep imports like "matrix-js-sdk/lib/browser-index".
+  let matrixBrowserIndexPath: string | undefined;
+  let matrixLoggerPath: string | undefined;
+  try {
+    matrixBrowserIndexPath = realpathSync(
+      "node_modules/matrix-js-sdk/lib/browser-index.js",
+    );
+    matrixLoggerPath = realpathSync("node_modules/matrix-js-sdk/lib/logger.js");
+  } catch {
+    // In dev or in unusual setups these files might not exist yet; aliases
+    // below fall back to the bare specifiers in that case.
+  }
+
   return {
     server: {
       port: 3000,
@@ -140,8 +155,10 @@ export default ({
         // src/index.ts instead
         "matrix-widget-api": "matrix-widget-api/src/index.ts",
         // Ensure Rollup can resolve specific browser entrypoints from matrix-js-sdk
-        "matrix-js-sdk/lib/browser-index": "matrix-js-sdk/lib/browser-index.js",
-        "matrix-js-sdk/lib/logger": "matrix-js-sdk/lib/logger.js",
+        "matrix-js-sdk/lib/browser-index":
+          matrixBrowserIndexPath ?? "matrix-js-sdk/lib/browser-index",
+        "matrix-js-sdk/lib/logger":
+          matrixLoggerPath ?? "matrix-js-sdk/lib/logger",
       },
       dedupe: [
         "react",
