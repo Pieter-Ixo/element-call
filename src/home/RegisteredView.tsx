@@ -8,6 +8,7 @@ Please see LICENSE in the repository root for full details.
 import {
   useState,
   useCallback,
+  useEffect,
   type FormEvent,
   type FormEventHandler,
   type FC,
@@ -36,6 +37,10 @@ import { JoinExistingCallModal } from "./JoinExistingCallModal";
 import { Form } from "../form/Form";
 import { AnalyticsNotice } from "../analytics/AnalyticsNotice";
 import { E2eeType } from "../e2ee/e2eeType";
+import {
+  getKeyForRoom,
+  type EncryptionSystem,
+} from "../e2ee/sharedKeyManagement";
 import { useOptInAnalytics } from "../settings/settings";
 import { useUrlParams } from "../UrlParams";
 
@@ -105,6 +110,22 @@ export const RegisteredView: FC<Props> = ({ client }) => {
   );
 
   const recentRooms = useGroupCallRooms(client);
+
+  useEffect(() => {
+    if (recentRooms.length === 1) {
+      const { room } = recentRooms[0];
+      const password = getKeyForRoom(room.roomId);
+      let encryptionSystem: EncryptionSystem;
+      if (password) {
+        encryptionSystem = { kind: E2eeType.SHARED_KEY, secret: password };
+      } else if (room.hasEncryptionStateEvent()) {
+        encryptionSystem = { kind: E2eeType.PER_PARTICIPANT };
+      } else {
+        encryptionSystem = { kind: E2eeType.NONE };
+      }
+      void navigate(getRelativeRoomUrl(room.roomId, encryptionSystem, room.name));
+    }
+  }, [recentRooms, navigate]);
 
   const [existingAlias, setExistingAlias] = useState<string>();
   const onJoinExistingRoom = useCallback(() => {
