@@ -24,16 +24,13 @@ import * as fs from "node:fs";
 
 // https://vitejs.dev/config/
 // Modified type helper from defineConfig to allow for packageType (see defineConfig from vite)
-export default ({
-  mode,
-  packageType,
-}: ConfigEnv & { packageType?: "full" | "embedded" }): UserConfig => {
+export default ({ mode }: ConfigEnv): UserConfig => {
   const env = loadEnv(mode, process.cwd());
   // Environment variables with the VITE_ prefix are accessible at runtime.
   // So, we set this to allow for build/package specific behavior.
   // In future we might be able to do what is needed via code splitting at
   // build time.
-  process.env.VITE_PACKAGE = packageType ?? "full";
+  process.env.VITE_PACKAGE = "embedded";
   const plugins: PluginOption[] = [
     react(),
     svgrPlugin({
