@@ -436,10 +436,10 @@ export const computeUrlParams = (search = "", hash = ""): UrlParams => {
     // Non widget usecase defaults
     default:
       intentPreset = {
-        confineToRoom: false,
+        confineToRoom: true,
         appPrompt: true,
         preload: false,
-        header: HeaderStyle.Standard,
+        header: HeaderStyle.None,
         showControls: true,
         hideScreensharing: false,
         allowIceFallback: false,
