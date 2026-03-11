@@ -18,7 +18,7 @@ import { pickBy } from "lodash-es";
 import { Config } from "./config/Config";
 import { type EncryptionSystem } from "./e2ee/sharedKeyManagement";
 import { E2eeType } from "./e2ee/e2eeType";
-import { platform } from "./Platform";
+// import { platform } from "./Platform";
 
 interface RoomIdentifier {
   roomAlias: string | null;
@@ -392,12 +392,14 @@ export const computeUrlParams = (search = "", hash = ""): UrlParams => {
     confineToRoom: true,
     appPrompt: false,
     preload: false,
-    header: platform === "desktop" ? HeaderStyle.None : HeaderStyle.AppBar,
+    // header: platform === "desktop" ? HeaderStyle.None : HeaderStyle.AppBar,
+    header: HeaderStyle.None,
     showControls: true,
     hideScreensharing: false,
     allowIceFallback: true,
     perParticipantE2EE: true,
-    controlledAudioDevices: platform === "desktop" ? false : true,
+    // controlledAudioDevices: platform === "desktop" ? false : true,
+    controlledAudioDevices: true,
     skipLobby: true,
     returnToLobby: false,
     sendNotificationType: "notification",
