@@ -8,6 +8,10 @@
   "brand": "Gathering",
   "show_labs_settings": false,
   "ssla": "https://static.element.io/legal/element-software-and-services-license-agreement-uk-1.pdf",
+  "media_devices": {
+    "enable_audio": false,
+    "enable_video": false
+  },
   "matrix_rtc_session": {
     "wait_for_key_rotation_ms": 5000,
     "delayed_leave_event_restart_ms": 4000,
