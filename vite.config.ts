@@ -31,11 +31,12 @@ export default ({
   packageType,
 }: ConfigEnv & { packageType?: "full" | "embedded" }): UserConfig => {
   const env = loadEnv(mode, process.cwd());
-  // Environment variables with the VITE_ prefix are accessible at runtime.
-  // So, we set this to allow for build/package specific behavior.
-  // In future we might be able to do what is needed via code splitting at
-  // build time.
-  process.env.VITE_PACKAGE = packageType ?? "full";
+  // IXO: force embedded mode for the Vercel deployment. The full build
+  // pipeline is preserved (so public/config.json is served), but the app
+  // behaves as if loaded as an iframe widget for impacts-x-web and the
+  // IXO Portal mobile WebView.
+  packageType = "embedded";
+  process.env.VITE_PACKAGE = packageType;
   const plugins: PluginOption[] = [
     react(),
     wasm(),
