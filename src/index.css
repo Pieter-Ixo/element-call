@@ -57,9 +57,23 @@ layer(compound);
 }
 
 .cpd-theme-dark {
-  --cpd-color-border-accent: var(--cpd-color-green-1100);
+  --cpd-color-bg-canvas-default: #171717;
+  --cpd-color-bg-accent-rest: #00d2ff;
+  --cpd-color-text-primary: #ffffff;
+  --cpd-color-text-action-accent: #00d2ff;
+  --cpd-color-bg-subtle-primary: #202121;
+  --cpd-color-border-accent: #00d2ff80;
   --stopgap-color-on-solid-accent: var(--cpd-color-text-primary);
   --stopgap-background-85: rgba(16, 19, 23, 0.85);
+}
+
+.cpd-theme-light {
+  --cpd-color-bg-canvas-default: #f4f9f9;
+  --cpd-color-bg-accent-rest: #0080b2;
+  --cpd-color-text-primary: #000000;
+  --cpd-color-text-action-accent: #0080b2;
+  --cpd-color-border-accent: #0080b280;
+  --cpd-color-bg-subtle-primary: #ffffff;
 }
 
 body {
