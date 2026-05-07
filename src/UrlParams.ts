@@ -18,7 +18,7 @@ import { pickBy } from "lodash-es";
 import { Config } from "./config/Config";
 import { type EncryptionSystem } from "./e2ee/sharedKeyManagement";
 import { E2eeType } from "./e2ee/e2eeType";
-import { platform } from "./Platform";
+// import { platform } from "./Platform";
 
 interface RoomIdentifier {
   roomAlias: string | null;
@@ -362,16 +362,20 @@ export const computeUrlParams = (search = "", hash = ""): UrlParams => {
   const intent = !isWidget
     ? UserIntent.Unknown
     : (parser.getEnumParam("intent", UserIntent) ?? UserIntent.Unknown);
-  // Here we only use constants and `platform` to determine the intent preset.
+  // IXO: hide header and force controlledAudioDevices regardless of platform
+  // so the embedded WebView and impacts-x-web iframe always render headerless
+  // and let the host control audio device selection.
   let intentPreset: UrlConfiguration = {
     confineToRoom: true,
     preload: false,
-    header: platform === "desktop" ? HeaderStyle.None : HeaderStyle.AppBar,
+    // header: platform === "desktop" ? HeaderStyle.None : HeaderStyle.AppBar,
+    header: HeaderStyle.None,
     showControls: true,
     hideScreensharing: false,
     allowIceFallback: true,
     perParticipantE2EE: true,
-    controlledAudioDevices: platform === "desktop" ? false : true,
+    // controlledAudioDevices: platform === "desktop" ? false : true,
+    controlledAudioDevices: true,
     skipLobby: true,
     returnToLobby: false,
     sendNotificationType: "notification",
@@ -417,11 +421,13 @@ export const computeUrlParams = (search = "", hash = ""): UrlParams => {
       intentPreset.callIntent = intentPreset.callIntent ?? "video";
       break;
     // Non widget usecase defaults
+    // IXO: keep header hidden in SPA mode too, in case the mobile WebView ever
+    // loads a non-widget URL (e.g. if widgetId/parentUrl is missing).
     default:
       intentPreset = {
         confineToRoom: false,
         preload: false,
-        header: HeaderStyle.Standard,
+        header: HeaderStyle.None,
         showControls: true,
         hideScreensharing: false,
         allowIceFallback: false,
